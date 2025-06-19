@@ -1,0 +1,33 @@
+services:
+  iodined:
+    build: .
+    container_name: iodined
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    restart: unless-stopped
+    environment:
+      IODINED_PASS: "${IODINED_PASS}"
+      IODINED_TUNNEL_IP: "${IODINED_TUNNEL_IP}"
+      IODINED_DOMAIN: "${IODINED_DOMAIN}"
+
+  shadowsocks:
+    image: teddysun/shadowsocks-libev
+    container_name: shadowsocks
+    restart: unless-stopped
+    ports:
+      - "8388:8388/tcp"
+      - "8388:8388/udp"
+    environment:
+      - PASSWORD=${SS_PASSWORD}
+      - METHOD=${SS_METHOD}
+    command: >
+      ss-server
+      -s 0.0.0.0
+      -p 8388
+      -m ${SS_METHOD}
+      -k ${SS_PASSWORD}
+      --plugin v2ray-plugin
+      --plugin-opts="server"

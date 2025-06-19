@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  iodine-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.iodine
+    container_name: iodine-client
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    restart: unless-stopped
+    environment:
+      IODINED_PASS: ${IODINED_PASS}
+      TUNNEL_DOMAIN: ${TUNNEL_DOMAIN}
+      TUNNEL_GATEWAY: ${TUNNEL_GATEWAY}
+      IODINED_IP: ${IODINED_IP}
+
+  ss-client:
+    image: teddysun/shadowsocks-libev
+    container_name: ss-client
+    depends_on:
+      - iodine-client
+    ports:
+      - "0.0.0.0:${SOCKS_PORT}:${LOCAL_SOCKS_PORT}/tcp"
+    restart: unless-stopped
+    environment:
+      - SS_PASSWORD=${SS_PASSWORD}
+      - SS_METHOD=${SS_METHOD}
+      - TUNNEL_GATEWAY=${TUNNEL_GATEWAY}
+      - SS_REMOTE_PORT=${SS_REMOTE_PORT}
+      - LOCAL_SOCKS_PORT=${LOCAL_SOCKS_PORT}
+    volumes:
+      - ./start-ss-client.sh:/usr/local/bin/start-ss-client.sh:ro
+    entrypoint: ["/usr/local/bin/start-ss-client.sh"]

@@ -1,0 +1,8 @@
+FROM alpine:latest
+
+RUN apk add --no-cache iodine bash
+
+COPY start-iodine.sh /usr/local/bin/start-iodine.sh
+RUN chmod +x /usr/local/bin/start-iodine.sh
+
+ENTRYPOINT ["/usr/local/bin/start-iodine.sh"]
