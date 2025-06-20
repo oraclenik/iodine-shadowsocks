@@ -12,6 +12,9 @@ services:
       IODINED_PASS: "${IODINED_PASS}"
       IODINED_TUNNEL_IP: "${IODINED_TUNNEL_IP}"
       IODINED_DOMAIN: "${IODINED_DOMAIN}"
+    dns:
+         - 1.1.1.1
+         - 8.8.8.8
 
   shadowsocks:
     image: teddysun/shadowsocks-libev
@@ -23,6 +26,9 @@ services:
     environment:
       - PASSWORD=${SS_PASSWORD}
       - METHOD=${SS_METHOD}
+    dns:
+         - 1.1.1.1
+         - 8.8.8.8
     command: >
       ss-server
       -s 0.0.0.0
